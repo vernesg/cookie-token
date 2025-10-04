@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cookie to Token</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0a0f1c;
+      color: #e0e0e0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+    h1 {
+      color: #00ff99;
+      text-shadow: 0 0 10px #00ff99;
+    }
+    .container {
+      background: rgba(20, 20, 35, 0.9);
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0, 255, 150, 0.5);
+      max-width: 600px;
+      width: 90%;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      outline: none;
+    }
+    button {
+      background: #00ff99;
+      color: #0a0f1c;
+      font-weight: bold;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover {
+      background: #00cc77;
+    }
+    pre {
+      background: #111827;
+      padding: 15px;
+      border-radius: 8px;
+      max-height: 300px;
+      overflow-y: auto;
+      color: #00ffcc;
+      font-size: 14px;
+    }
+    .error {
+      color: #ff4444;
+    }
+  </style>
+</head>
+<body>
+  <h1>Cookie-Token Converter</h1>
+  <div class="container">
+    <input id="cookieInput" type="text" placeholder="Enter your COOKIE here" />
+    <button onclick="runFetch()">Convert</button>
+    <pre id="output">Tokens will appear here...</pre>
+  </div>
+
+  <script>
+    async function fetchC2T(cookie) {
+      const url = `https://c2t.lara.rest/${cookie}`;
+      const output = document.getElementById("output");
+      output.textContent = `Converting: ${url}\n`;
+
+      try {
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        try {
+          const data = await response.json();
+          output.textContent += "✅ JSON Response:\n" + JSON.stringify(data, null, 2);
+        } catch (err) {
+          const text = await response.text();
+          output.textContent += "✅ Text Response:\n" + text.slice(0, 500);
+        }
+
+      } catch (err) {
+        output.innerHTML = `<span class="error">❌ Error fetching from API: ${err.message}</span>`;
+      }
+    }
+
+    function runFetch() {
+      const cookieInput = document.getElementById("cookieInput").value.trim();
+      if (!cookieInput) {
+        document.getElementById("output").innerHTML = '<span class="error">❌ No cookie provided.</span>';
+      } else {
+        fetchC2T(cookieInput);
+      }
+    }
+  </script>
+</body>
+</html>
